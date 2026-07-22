@@ -3,12 +3,17 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useRaceStore } from "@/lib/useRaceStore";
+import { track } from "@/lib/analytics";
 import Logo from "./Logo";
 
 export default function Onboarding() {
   const setProfile = useRaceStore((s) => s.setProfile);
   const [name, setName] = useState("");
-  const go = () => setProfile(name.trim() || "익명의 레이서");
+  const go = () => {
+    // 퍼널 1단계: 진입 → 닉네임 입력 완료
+    track("onboarding_complete", { has_custom_name: name.trim().length > 0 });
+    setProfile(name.trim() || "익명의 레이서");
+  };
 
   return (
     <div className="flex min-h-[100dvh] flex-col justify-center gap-8 px-6">

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { QRCodeSVG } from "qrcode.react";
 import { Check, Copy, QrCode } from "lucide-react";
+import { track } from "@/lib/analytics";
 
 export default function InviteCard({ roomCode }: { roomCode: string }) {
   const [open, setOpen] = useState(false);
@@ -17,6 +18,7 @@ export default function InviteCard({ roomCode }: { roomCode: string }) {
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(inviteUrl || roomCode);
+      track("invite_copy", { room_code: roomCode }); // 바이럴: 초대 링크 복사
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1500);
     } catch {
@@ -49,7 +51,10 @@ export default function InviteCard({ roomCode }: { roomCode: string }) {
             )}
           </button>
           <button
-            onClick={() => setOpen((v) => !v)}
+            onClick={() => {
+              if (!open) track("invite_qr_open", { room_code: roomCode });
+              setOpen((v) => !v);
+            }}
             className="flex items-center gap-1 rounded-xl border border-white/15 px-3 py-2 text-xs font-semibold text-white/70 transition hover:bg-white/5"
           >
             <QrCode size={13} /> QR

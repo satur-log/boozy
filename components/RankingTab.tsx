@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Crosshair, RefreshCw } from "lucide-react";
 import { useRaceStore } from "@/lib/useRaceStore";
+import { track } from "@/lib/analytics";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import {
   CountRank,
@@ -145,6 +146,7 @@ export default function RankingTab() {
             <button
               key={c.key}
               onClick={() => {
+                track("ranking_category", { category: c.key });
                 setCat(c.key);
                 setShowMine(false);
               }}
@@ -175,7 +177,11 @@ export default function RankingTab() {
         </p>
         {supportsMine && isSupabaseConfigured && (
           <button
-            onClick={() => setShowMine((v) => !v)}
+            onClick={() => {
+              if (!showMine)
+                track("my_rank_click", { category: cat, ranked: myRank !== null });
+              setShowMine((v) => !v);
+            }}
             className="flex shrink-0 items-center gap-1 rounded-full border px-3 py-1.5 text-xs font-bold transition"
             style={{
               borderColor: showMine ? "#00e0ff" : "rgba(255,255,255,0.15)",

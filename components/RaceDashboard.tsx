@@ -161,6 +161,12 @@ export default function RaceDashboard() {
   };
 
   const handleLeave = () => {
+    // 완주율: finished=false 면 중도 이탈
+    track("race_leave", {
+      mode,
+      finished: isFinished,
+      total_glasses: total,
+    });
     if (isMulti && participantId) void leaveParticipant(participantId);
     recordedRef.current = false;
     leaveRoom();
@@ -235,8 +241,14 @@ export default function RaceDashboard() {
         selectedTypes={selectedTypes}
         currentType={currentType}
         counts={counts}
-        onPick={setCurrentType}
-        onAdd={addDrinkType}
+        onPick={(t) => {
+          track("drink_type_switch", { drink_type: t });
+          setCurrentType(t);
+        }}
+        onAdd={(t) => {
+          track("drink_type_add", { drink_type: t });
+          addDrinkType(t);
+        }}
         onRemove={removeDrinkType}
         disabled={isFinished}
       />

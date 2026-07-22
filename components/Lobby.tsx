@@ -24,6 +24,8 @@ export default function Lobby() {
     const params = new URLSearchParams(window.location.search);
     const r = params.get("room");
     if (r && isSupabaseConfigured) {
+      // 바이럴 유입: QR/링크 타고 들어온 방문
+      track("join_via_link", { room_code: r.toUpperCase() });
       setCode(r.toUpperCase());
       setTab("join");
     }
