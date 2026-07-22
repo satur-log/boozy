@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 
 const bmKkubulim = localFont({
@@ -25,9 +26,12 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const gaId = process.env.NEXT_PUBLIC_GA_ID;
   return (
     <html lang="ko" className={bmKkubulim.variable}>
       <body className="font-sans antialiased">{children}</body>
+      {/* 측정 ID가 설정된 경우에만 GA4 로드 */}
+      {gaId && <GoogleAnalytics gaId={gaId} />}
     </html>
   );
 }

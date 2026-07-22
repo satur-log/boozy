@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRaceStore } from "@/lib/useRaceStore";
+import { track } from "@/lib/analytics";
 import Onboarding from "./Onboarding";
 import BottomNav, { Tab } from "./BottomNav";
 import RaceDashboard from "./RaceDashboard";
@@ -34,7 +35,13 @@ export default function BoozyApp() {
         {tab === "ranking" && <RankingTab />}
         {tab === "mine" && <MyRecordTab />}
       </div>
-      <BottomNav active={tab} onChange={setTab} />
+      <BottomNav
+        active={tab}
+        onChange={(t) => {
+          track("tab_view", { tab: t });
+          setTab(t);
+        }}
+      />
     </>
   );
 }

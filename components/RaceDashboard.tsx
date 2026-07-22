@@ -31,6 +31,7 @@ import {
   syncParticipant,
 } from "@/lib/rooms";
 import { playFanfare, playPop, playSip } from "@/lib/sound";
+import { track } from "@/lib/analytics";
 import { recordSession } from "@/lib/localStats";
 import { savePng, shareKakao, shareResult } from "@/lib/share";
 import SojuGlass from "./SojuGlass";
@@ -101,6 +102,14 @@ export default function RaceDashboard() {
     if (!muted) playSip();
 
     const nextCount = prevCount + 1;
+
+    // 📊 핵심 지표: 잔 클릭
+    track("drink_click", {
+      drink_type: currentType,
+      mode,
+      total_glasses: total + 1,
+    });
+
     if (
       Math.floor(nextCount / curDrink.perBottle) >
       Math.floor(prevCount / curDrink.perBottle)
@@ -110,6 +119,7 @@ export default function RaceDashboard() {
         `${curDrink.emoji} ${curDrink.key} ${n}${curDrink.bottleLabel} 완성!`
       );
       if (!muted) playPop();
+      track("bottle_complete", { drink_type: currentType, bottles: n });
       window.setTimeout(() => setBottleMsg(null), 1200);
     }
 
@@ -140,6 +150,13 @@ export default function RaceDashboard() {
       });
       recordedRef.current = true;
     }
+    track("race_finish", {
+      mode,
+      total_glasses: total,
+      pace: Number(speed.toFixed(2)),
+      tier: tier.key,
+      elapsed_min: Math.round(elapsed / 60000),
+    });
     if (isMulti && participantId) void finishParticipant({ participantId, speed });
   };
 
@@ -465,6 +482,7 @@ function FinalReport({
     setBusy(true);
     try {
       await savePng(cardRef.current, `boozy-${nickname}.png`);
+      track("share", { method: "save_image" });
       flash("이미지를 저장했어요 📸");
     } finally {
       setBusy(false);
@@ -480,6 +498,7 @@ function FinalReport({
         text: `${nickname} · ${title} · ${speed.toFixed(1)}병/h 🏎️🔥`,
         url: typeof window !== "undefined" ? window.location.origin : "",
       });
+      track("share", { method: "web_share", result: res });
       if (res === "copied") flash("링크를 복사했어요 🔗");
       else if (res === "failed") flash("공유를 지원하지 않는 환경이에요");
     } finally {
@@ -493,6 +512,7 @@ function FinalReport({
       description: `${title} · ${speed.toFixed(1)}병/h`,
       url: typeof window !== "undefined" ? window.location.origin : "",
     });
+    track("share", { method: "kakao", result: ok ? "sent" : "fallback" });
     if (!ok) onShare();
   };
 

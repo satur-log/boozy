@@ -6,6 +6,7 @@ import { Loader2, Swords, Unlink } from "lucide-react";
 import { useRaceStore } from "@/lib/useRaceStore";
 import { useRoomLeaderboard } from "@/lib/useRoomLeaderboard";
 import { findRoomByCode } from "@/lib/rooms";
+import { track } from "@/lib/analytics";
 import { Participant, Room } from "@/lib/types";
 import { getTier, liveSpeed } from "@/lib/booster";
 import { sojuEquivGlasses, totalGlasses } from "@/lib/drinks";
@@ -99,7 +100,10 @@ export default function BattleTab({ onGoRace }: { onGoRace: () => void }) {
     try {
       const room = await findRoomByCode(oppCode.trim());
       if (!room) setError("존재하지 않거나 종료된 방이에요");
-      else setOppRoom(room);
+      else {
+        track("battle_connect", { opponent_code: room.room_code });
+        setOppRoom(room);
+      }
     } catch {
       setError("연결에 실패했어요");
     } finally {

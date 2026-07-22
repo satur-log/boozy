@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@next/third-parties": "^14.2.35",
     "@supabase/supabase-js": "^2.110.8",
     "framer-motion": "^11.3.0",
     "html2canvas": "^1.4.1",

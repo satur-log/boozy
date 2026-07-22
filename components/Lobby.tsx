@@ -6,6 +6,7 @@ import { DoorOpen, Loader2, PlusCircle, User } from "lucide-react";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import { createRoom, joinRoom } from "@/lib/rooms";
 import { useRaceStore } from "@/lib/useRaceStore";
+import { track } from "@/lib/analytics";
 import Logo from "./Logo";
 
 type Tab = "menu" | "create" | "join";
@@ -33,6 +34,7 @@ export default function Lobby() {
     setError(null);
     try {
       const { room, participant } = await createRoom(title, nickname);
+      track("room_create", { room_code: room.room_code });
       enterRoom({
         roomId: room.id,
         roomCode: room.room_code,
@@ -53,6 +55,7 @@ export default function Lobby() {
     setError(null);
     try {
       const { room, participant } = await joinRoom(code.trim(), nickname);
+      track("room_join", { room_code: room.room_code });
       enterRoom({
         roomId: room.id,
         roomCode: room.room_code,
@@ -114,7 +117,10 @@ export default function Lobby() {
           </button>
 
           <button
-            onClick={startSolo}
+            onClick={() => {
+              track("solo_start");
+              startSolo();
+            }}
             className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 text-left transition hover:bg-white/10"
           >
             <span className="text-xl">🐢</span>
