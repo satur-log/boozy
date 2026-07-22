@@ -132,7 +132,12 @@ export default function RaceDashboard() {
     finish();
     if (!muted) playFanfare();
     if (!recordedRef.current) {
-      recordSession(total, speed);
+      recordSession({
+        drinks: total,
+        speed,
+        elapsedMs: elapsed,
+        equivBottles,
+      });
       recordedRef.current = true;
     }
     if (isMulti && participantId) void finishParticipant({ participantId, speed });

@@ -7,7 +7,8 @@
  *
  * ⚠️ 첫 잔 직후엔 경과시간이 0에 가까워 값이 폭발한다.
  *    → 최소 측정 창(MEASURE_WINDOW_MS)으로 분모를 눌러 스파이크를 막는다.
- *    이렇게 하면 처음 10분은 "10분에 이만큼 마신 페이스"로 환산돼 자연스럽게 오른다.
+ *    이렇게 하면 처음 30분은 "30분에 이만큼 마신 페이스"로 환산돼 자연스럽게 오른다.
+ *    (창이 짧을수록 초반 몇 잔이 과하게 뻥튀기된다 — 맥주는 ×3.5라 특히)
  */
 
 export const GLASSES_PER_BOTTLE = 7;
@@ -15,8 +16,8 @@ export const GLASSES_PER_BOTTLE = 7;
 /** 연타 방지 쿨타임 (ms) — PRD: 3초 */
 export const COOLDOWN_MS = 3000;
 
-/** 최소 측정 창 (ms) — 초반 나눗셈 폭발 방지 (10분) */
-export const MEASURE_WINDOW_MS = 10 * 60 * 1000;
+/** 최소 측정 창 (ms) — 초반 나눗셈 폭발 방지 (30분) */
+export const MEASURE_WINDOW_MS = 30 * 60 * 1000;
 
 /** 랭킹 등록 제외 기준 (주작 방지) — 5병/h 초과 */
 export const CHEAT_SPEED_LIMIT = 5.0;
